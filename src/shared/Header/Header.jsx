@@ -1,14 +1,61 @@
+import { useContext } from "react";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../Provider/AuthProvider";
+import {  FaShoppingCart } from 'react-icons/fa';
+import useCart from "../../hooks/useCart";
 
 const Header = () => {
+  const { user, logOut } = useContext(AuthContext);
+  // console.log(user.displayName);
+  const [cart]=useCart();
+  // console.log(cart);
+  const handleLogout = () => {
+    logOut()
+      .then(() => {
+        console.log("sign out ");
+      })
+      .catch((error) => {
+        console.error(error.message);
+      });
+  };
   const navItems = (
-    <>
-      <Link to="/" className="mx-3">Home</Link>
-      <Link to="/" className="mx-3">Contact us</Link>
-      <Link to="/" className="mx-3">DashBoard</Link>
-      <Link to="/" className="mx-3">Our Menu</Link>
-      
-    </>
+    <div className="flex items-center">
+      <Link to="/" className="mx-3">
+        Home
+      </Link>
+      <Link to="/menu" className="mx-3">
+        Menu
+      </Link>
+      <Link to="/order/salad" className="mx-3">
+        Order Food
+      </Link>
+      <Link to='/dashboard/mycart'><button className="btn mx-3">
+        <FaShoppingCart/>
+        <div className="badge ">+{cart?.length || 0}</div>
+      </button></Link>
+
+      {user ? (
+        <>
+          <label
+            className="btn btn-ghost btn-circle avatar tooltip  tooltip-bottom"
+            data-tip={user?.displayName}
+          >
+            <div className="w-10 rounded-full">
+              <img src={user?.photoURL} />
+            </div>
+          </label>
+          <button onClick={handleLogout} className="btn btn-active btn-ghost">
+            logout
+          </button>
+        </>
+      ) : (
+        <>
+          <Link to="/login" className="mx-3">
+            Login
+          </Link>
+        </>
+      )}
+    </div>
   );
   return (
     <>
@@ -35,19 +82,17 @@ const Header = () => {
               tabIndex={0}
               className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
             >
-                {navItems}
+              {navItems}
             </ul>
           </div>
           <a className="btn btn-ghost normal-case text-xl">Bistro BOSS</a>
         </div>
-        <div className="navbar-center hidden lg:flex">
-          <ul className="menu menu-horizontal px-1">
-            {navItems}
-          </ul>
+        <div className="navbar-end hidden lg:flex">
+          <ul className="menu menu-horizontal px-1">{navItems}</ul>
         </div>
-        <div className="navbar-end">
+        {/* <div className="navbar-end">
           <a className="btn">Get started</a>
-        </div>
+        </div> */}
       </nav>
     </>
   );
